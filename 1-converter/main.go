@@ -1,99 +1,90 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
-const USDinEUR = 0.88
-const USDinRUB = 82.17
-const EURinRUB = (1 / USDinEUR) * USDinRUB
-
 func main() {
+	currency := map[string]map[string]float64{} // создаем мар в котором будут храниться курсы валют в виде мар
+	currency["USD"] = map[string]float64{       // добавляем в мар другую мап в которой хранятся курсы USD по отношению к другим валютам
+		"EUR": 0.87,  // в одном долларе 0.87 евро
+		"RUB": 81.35, // в одном долларе 81.35 рублей
+	}
+	currency["EUR"] = map[string]float64{
+		"USD": 1.15,  // в оддном евро 1.15 доллара
+		"RUB": 93.26, // в оддном евро 93.26 рублей
+	}
+	currency["RUB"] = map[string]float64{
+		"USD": 0.012, // в одном рубле 0.012 долларов
+		"EUR": 0.011, // в одном рубле 0.011 евро
+	}
+	firstCurrency := inputCurrency()                     // считываем первую валюту
+	sum := inputSum()                                    // считываем сумму
+	secondCurrency := inputSecondCurrency(firstCurrency) // считываем вторую валюту
 
+	fmt.Printf("Резултат конвертации = %0.2f", calculate(currency, firstCurrency, sum, secondCurrency))
+
+}
+
+func inputCurrency() string {
+	var inputCurrency string // определяем переменную которую будем возвращать
 	for {
-		firstValute, summ, secondValute, error := inputUser()
-		if error != nil {
-			fmt.Println("некоректный ввод")
+		fmt.Print("Введите первую валюту EUR, USD, RUB: ")
+		fmt.Scan(&inputCurrency)                                                        // сканируем ввод пользователя и записываем в переменную
+		if inputCurrency != "EUR" && inputCurrency != "USD" && inputCurrency != "RUB" { // проверка правильности введеной валюты
+			fmt.Println("Неверно введена валюта")
 			continue
-		} else {
-			fmt.Printf("Резултат конвертации = %0.2f", calculate(firstValute, summ, secondValute))
-			break
-		}
-	}
 
+		}
+		return inputCurrency // возвращаем переменную
+	}
 }
-func inputUser() (string, float64, string, error) {
-	var firstInput string
-	var secondInput float64
-	var thirdInput string
-	fmt.Print("Введите первую валюту EUR, USD, RUB: ")
-	fmt.Scan(&firstInput)
-	if firstInput != "EUR" && firstInput != "USD" && firstInput != "RUB" {
-		return "", 0.0, "", errors.New("Error")
-	}
-
-	fmt.Print("Введите сумму: ")
-	fmt.Scan(&secondInput)
-	if secondInput < 0 {
-		return "", 0.0, "", errors.New("Error")
-	}
-
-	switch firstInput {
-	case "EUR":
-		fmt.Print("Введите вторую валюту USD, RUB: ")
-		fmt.Scan(&thirdInput)
-		if thirdInput != "USD" && thirdInput != "RUB" {
-			return "", 0.0, "", errors.New("Error")
+func inputSum() float64 {
+	var inputSum float64
+	for {
+		fmt.Print("Введите сумму: ")
+		fmt.Scan(&inputSum)
+		if inputSum < 0 {
+			fmt.Println("Сумма не может быть меньше 0")
+			continue
 		}
-	case "USD":
-		fmt.Print("Введите вторую валюту EUR, RUB: ")
-		fmt.Scan(&thirdInput)
-		if thirdInput != "EUR" && thirdInput != "RUB" {
-			return "", 0.0, "", errors.New("Error")
-		}
-	case "RUB":
-		fmt.Print("Введите вторую валюту USD, EUR: ")
-		fmt.Scan(&thirdInput)
-		if thirdInput != "USD" && thirdInput != "EUR" {
-			return "", 0.0, "", errors.New("Error")
-		}
+		return inputSum
 	}
-	return firstInput, secondInput, thirdInput, nil
+}
+func inputSecondCurrency(firstCurrency string) string {
+	var inputSecondCurrency string
+first: // ставим лэйбл для того чтобы могли при неправильном вводе второй валюты повторно запросить ввод, при помощи continue first
+	for {
+		switch firstCurrency { // реализуем switch для того чтобы выводдить пользователю доступные варианты
+		case "USD":
+			fmt.Println("Введите вторую валюту EUR,RUB")
+			fmt.Scan(&inputSecondCurrency)
+			if inputSecondCurrency != "EUR" && inputSecondCurrency != "RUB" {
+				fmt.Println("Неверно введена валюта")
+				continue first
+			}
+		case "EUR":
+			fmt.Println("Введите вторую валюту USD,RUB")
+			fmt.Scan(&inputSecondCurrency)
+			if inputSecondCurrency != "USD" && inputSecondCurrency != "RUB" {
+				fmt.Println("Неверно введена валюта")
+				continue first
+			}
+		case "RUB":
+			fmt.Println("Введите вторую валюту EUR,USD")
+			fmt.Scan(&inputSecondCurrency)
+			if inputSecondCurrency != "USD" && inputSecondCurrency != "EUR" {
+				fmt.Println("Неверно введена валюта")
+				continue first
+			}
+		}
+		return inputSecondCurrency
+	}
 }
 
-func calculate(firstValute string, summ float64, secondValute string) float64 {
-	first := firstValute
-	chislo := summ
-	two := secondValute
-	var result float64
-
-	switch first {
-	case "EUR":
-		switch two {
-		case "USD":
-			result = chislo * 1 / USDinEUR
-
-		case "RUB":
-			result = chislo * EURinRUB
-		}
-	case "USD":
-		switch two {
-		case "EUR":
-			result = chislo * USDinEUR
-
-		case "RUB":
-			result = chislo * USDinRUB
-		}
-	case "RUB":
-		switch two {
-		case "EUR":
-			result = chislo * 1 / EURinRUB
-
-		case "USD":
-			result = chislo * 1 / USDinRUB
-		}
-
-	}
+func calculate(currency map[string]map[string]float64, firstCurrency string, summ float64, secondCurrency string) float64 {
+	// принемаем мар внутри другой мар, в качестве ключей к ним используем firstCurrency и secondCurrency
+	result := summ * currency[firstCurrency][secondCurrency] // расчитываем результат путем умножения суммы которую получили от пользователя на
+	// курс который храниться в мар
 	return result
 }
