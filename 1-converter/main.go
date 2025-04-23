@@ -22,7 +22,7 @@ func main() {
 	sum := inputSum()                                    // считываем сумму
 	secondCurrency := inputSecondCurrency(firstCurrency) // считываем вторую валюту
 
-	fmt.Printf("Резултат конвертации = %0.2f", calculate(currency, firstCurrency, sum, secondCurrency))
+	fmt.Printf("Резултат конвертации = %0.2f", calculate(&currency, firstCurrency, sum, secondCurrency))
 
 }
 
@@ -82,9 +82,9 @@ first: // ставим лэйбл для того чтобы могли при �
 	}
 }
 
-func calculate(currency map[string]map[string]float64, firstCurrency string, summ float64, secondCurrency string) float64 {
+func calculate(currency *map[string]map[string]float64, firstCurrency string, summ float64, secondCurrency string) float64 {
 	// принемаем мар внутри другой мар, в качестве ключей к ним используем firstCurrency и secondCurrency
-	result := summ * currency[firstCurrency][secondCurrency] // расчитываем результат путем умножения суммы которую получили от пользователя на
+	result := summ * (*currency)[firstCurrency][secondCurrency] // расчитываем результат путем умножения суммы которую получили от пользователя на
 	// курс который храниться в мар
 	return result
 }
