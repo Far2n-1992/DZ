@@ -23,20 +23,23 @@ func (binlist *BinList) DataSave() {
 	data, err := binlist.ToBytes()
 	if err != nil {
 		fmt.Println("Не удалось разобрать файл json")
+		return
 	}
 	storage.WriteFiles(data, "binlist.json")
+
 }
-func NewBinlist() *BinList {
+func NewBinlist() (*BinList, error) {
 	file, err := storage.ReadFile("binlist.json")
 	if err != nil {
 		return &BinList{
 			Bins: []Bin{},
-		}
+		}, nil
 	}
 	var vault BinList
 	err = json.Unmarshal(file, &vault)
 	if err != nil {
-		fmt.Println("Не удалось преоброзовать файл json")
+		return nil, err
+		// fmt.Println("Не удалось преоброзовать файл json")
 	}
-	return &vault
+	return &vault, nil
 }

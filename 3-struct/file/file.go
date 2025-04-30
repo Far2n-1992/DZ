@@ -13,11 +13,12 @@ func ReadFile(name string) ([]byte, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	a := strings.Contains(name, ".json") // проверка на расширение файла json
-	if a {
+	if IsJSONFile(name) {
 		return data, nil
 	} else {
 		return nil, errors.New("Invalid_format_file")
 	}
-
+}
+func IsJSONFile(name string) bool {
+	return strings.HasSuffix(name, ".json")
 }

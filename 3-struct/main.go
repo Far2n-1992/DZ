@@ -8,7 +8,10 @@ import (
 )
 
 func main() {
-	binlist := bins.NewBinlist()
+	binlist, err := bins.NewBinlist()
+	if err != nil {
+		fmt.Println(err)
+	}
 	createBin(binlist)
 	data, err := file.ReadFile("file.txt") // проверка работоспособности
 	if err != nil {                        // проверка работоспособности
@@ -20,7 +23,9 @@ func createBin(binlist *bins.BinList) {
 	var a string // переменные для входящих данных
 	var b bool   // переменные для входящих данных
 	var c string // переменные для входящих данных
-
+	a = "test"
+	b = true
+	c = "test2"
 	bin := bins.CreateBin(a, b, c)
 	binlist.AddNewBin(*bin)
 }

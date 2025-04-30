@@ -10,14 +10,14 @@ func WriteFiles(content []byte, name string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = file.Write(content)
 	defer file.Close()
+	_, err = file.Write(content)
 	if err != nil {
-
 		fmt.Println(err)
-		return
+
 	}
 	fmt.Println("Запись успешна")
+
 }
 func ReadFile(name string) ([]byte, error) {
 	data, err := os.ReadFile(name)
